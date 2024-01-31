@@ -17,15 +17,18 @@ namespace Utils.Daily
 
         private RandomDailyConfiguration Configuration { get; set; }
 
+        private readonly RandomDailyConfigurationValidator validator;
+
         public RandomDaily(DailyCliOptions options, RandomDailyConfiguration configuration)
         {
             TeamName = options.TeamName;
             Configuration = configuration;
+            validator = new RandomDailyConfigurationValidator();
         }
 
         public override int Run()
         {
-            ValidateConfigurations(Configuration);
+            validator.ValidateAndThrow(Configuration);
             TeamName = TeamName ?? GetTeam();
             var random = new Random();
             var team = Configuration.Teams.First(t => t.Name.Equals(TeamName));
@@ -38,16 +41,16 @@ namespace Utils.Daily
                 Console.WriteLine(member);
                 Console.Write("Present (Y/n): ");
                 var present = Console.ReadLine();
-                if (!present.ToLowerInvariant().Equals("n"))
+                if (present != null && !present.ToLowerInvariant().Equals("n"))
                 {
                     Console.Write("Feedback: ");
                     var feedback = Console.ReadLine();
-                    feedbacks[member] = feedback;
+                    feedbacks[member] = feedback ?? "";
                     continue;
                 }
                 missing.Add(member);
             }
-            if (missing.Count > 0)
+            if (missing.Any())
             {
                 Console.WriteLine("Missing people: {0}", string.Join(", ", missing));
             }
@@ -59,15 +62,9 @@ namespace Utils.Daily
             return 0;
         }
 
-        private void ValidateConfigurations(RandomDailyConfiguration configuration)
-        {
-            var validator = new RandomDailyConfigurationValidator();
-            validator.ValidateAndThrow(configuration);
-        }
-
         private string GetTeam()
         {
-            string teamName = "";
+            string? teamName = "";
             while (string.IsNullOrEmpty(teamName) || !ValidateTeam(teamName))
             {
                 Console.WriteLine("Choose a team ({0}):", string.Join(", ", Configuration.Teams.Select(t => t.Name)));

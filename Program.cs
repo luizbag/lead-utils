@@ -13,18 +13,17 @@ namespace Utils
         {
             Parser.Default.ParseArguments<DailyCliOptions, WeeklyReportsCliOptions>(args)
                 .MapResult(
-                    (DailyCliOptions opts) => RunDaily(opts),
+                    (DailyCliOptions opts) => RunRandomDaily(opts),
                     (WeeklyReportsCliOptions opts) => RunWeeklyChecks(opts),
                     errs => 1
                 );
         }
 
-        static int RunDaily(DailyCliOptions opts)
+        static int RunRandomDaily(DailyCliOptions opts)
         {
             try
             {
-                var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
-                var configuration = configurationRoot.GetSection(nameof(RandomDailyConfiguration)).Get<RandomDailyConfiguration>();
+                var configuration = GetConfiguration<RandomDailyConfiguration>(opts.ConfigFile);
                 return new RandomDaily(opts, configuration).Run();
             }
             catch (ValidationException e)
@@ -50,11 +49,11 @@ namespace Utils
             }
         }
 
-        static T GetConfiguration<T>(string configFile)
+        static T GetConfiguration<T>(string configFile) where T : new()
         {
             var configurationRoot = new ConfigurationBuilder().AddJsonFile(configFile).Build();
             var configuration = configurationRoot.GetSection(nameof(T)).Get<T>();
-            return configuration;
+            return configuration ?? new T();
         }
     }
 }
