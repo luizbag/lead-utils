@@ -19,6 +19,8 @@ namespace Utils.Daily
 
         private readonly RandomDailyConfigurationValidator validator;
 
+        private const string DateFormat = "yyyy_mm_dd";
+
         public RandomDaily(DailyCliOptions options, RandomDailyConfiguration configuration)
         {
             TeamName = options.TeamName;
@@ -62,7 +64,7 @@ namespace Utils.Daily
             return 0;
         }
 
-        private string GetTeam()
+        public string GetTeam()
         {
             string? teamName = "";
             while (string.IsNullOrEmpty(teamName) || !ValidateTeam(teamName))
@@ -73,12 +75,18 @@ namespace Utils.Daily
             return teamName;
         }
 
-        private void WriteNotes(RandomDailyNotes notes, RandomDailyTeam team, IList<string> missing, IDictionary<string, string> feedbacks)
+        public void WriteNotes(RandomDailyNotes notes, RandomDailyTeam team, IList<string> missing, IDictionary<string, string> feedbacks)
         {
-            using (var writer = File.AppendText(notes.FilePath))
+            if(!Path.Exists(notes.FilePath))
+            {
+                Directory.CreateDirectory(notes.FilePath);
+            }
+            string fileName = GetFileName(notes.Archive);
+            var fullPath = Path.Combine(notes.FilePath, fileName);
+            using (var writer = File.AppendText(fullPath))
             {
                 writer.WriteLine();
-                writer.WriteLine("Daily for team {0} on {1}", team.Name, DateTime.Today.ToShortDateString());
+                writer.WriteLine("Daily for team {0} on {1}", team.Name, DateTime.Today.ToShortTimeString());
                 foreach ((var member, var feedback) in feedbacks)
                 {
                     writer.WriteLine("\t- {0}: {1}", member, feedback);
@@ -88,6 +96,15 @@ namespace Utils.Daily
                     writer.WriteLine("Missing: {0}", string.Join(", ", missing));
                 }
             }
+        }
+
+        public string GetFileName(FeedbackArchive feedbackArchive) {
+            var now = DateTime.Now;
+            var dateString = now.ToString(DateFormat);
+            if(feedbackArchive == FeedbackArchive.Weekly) {
+                dateString = now.AddDays(now.DayOfWeek - DayOfWeek.Monday).ToString(DateFormat);
+            }
+            return string.Format("{0}_notes_{1}.txt", feedbackArchive, dateString);
         }
 
         public bool ValidateTeam(string teamName)

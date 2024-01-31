@@ -7,8 +7,8 @@
             {"Name": "Test", "Members": ["Eu", "Você", "Ele"]}
         ],
         "Notes": {
-            "FilePath": "c:\\Users\\LuizGavioli\\daily_notes.txt",
-            "WriteMode": "a"
+            "FilePath": "c:\\Users\\LuizGavioli\\feedback",
+            "Archive": "Weekly"
         }
     },
     "Weekly":{

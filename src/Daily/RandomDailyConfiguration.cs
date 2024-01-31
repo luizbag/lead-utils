@@ -1,4 +1,5 @@
 using System.Text;
+using utils.Daily;
 
 namespace Utils.Daily
 {
@@ -42,6 +43,6 @@ namespace Utils.Daily
     {
         public string FilePath { get; set; } = string.Empty;
 
-        public string WriteMode { get; set; } = string.Empty;
+        public FeedbackArchive Archive { get; set; } = FeedbackArchive.Daily;
     }
 }
