@@ -1,4 +1,4 @@
-namespace utils.Daily
+namespace Utils.Daily
 {
     public enum FeedbackArchive
     {
