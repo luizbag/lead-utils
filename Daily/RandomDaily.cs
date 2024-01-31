@@ -11,19 +11,19 @@ namespace Utils.Daily
 
     public class RandomDaily : IRunnable
     {
-        private string TeamName { get; set; }
+        private string? TeamName { get; set; } = null;
 
         private RandomDailyOptions Configuration { get; set; }
 
         public RandomDaily(DailyCliOptions options, RandomDailyOptions configuration)
         {
-            TeamName = options.TeamName ?? "";
+            TeamName = options.TeamName;
             Configuration = configuration;
         }
 
         public int Run()
         {
-            TeamName = GetTeam();
+            TeamName = TeamName ?? GetTeam();
             var random = new Random();
             var team = Configuration.Teams.First(t => t.Name.Equals(TeamName));
             var members = team.Members.ToArray();
