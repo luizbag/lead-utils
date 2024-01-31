@@ -1,0 +1,17 @@
+{
+    "RandomDailyOptions":{
+        "Teams": [
+            {"Name": "Frodo", "Members": [  "Lorena", "Alejandro", "Josué", "Swapnil", "SaiCharan", "Paulo"]},
+            {"Name": "Aragorn", "Members": ["Marcel", "Tiago", "Ricardo", "Andréia", "Richa", "Neetika"]},
+            {"Name": "GlobalApps", "Members": ["Cláudio", "Tiago", "Matheus", "José", "Adhan", "Felipe", "Pedro"]},
+            {"Name": "Test", "Members": ["Eu", "Você", "Ele"]}
+        ],
+        "Notes": {
+            "FilePath": "c:\\Users\\LuizGavioli\\daily_notes.txt",
+            "WriteMode": "a"
+        }
+    },
+    "Weekly":{
+
+    }
+}
