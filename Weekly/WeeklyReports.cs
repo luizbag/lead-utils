@@ -1,5 +1,4 @@
 using CommandLine;
-using utils;
 using utils.Weekly;
 
 namespace Utils.Weekly
@@ -17,6 +16,5 @@ namespace Utils.Weekly
         {
             return 0;
         }
-
     }
 }

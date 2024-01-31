@@ -23,7 +23,8 @@ namespace Utils
         {
             try
             {
-                var configuration = GetConfiguration<RandomDailyConfiguration>(opts.ConfigFile);
+                var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
+                var configuration = configurationRoot.GetSection(nameof(RandomDailyConfiguration)).Get<RandomDailyConfiguration>() ?? new RandomDailyConfiguration();
                 return new RandomDaily(opts, configuration).Run();
             }
             catch (ValidationException e)
@@ -38,7 +39,8 @@ namespace Utils
         {
             try
             {
-                var configuration = GetConfiguration<WeeklyReportsConfiguration>(opts.ConfigFile);
+                var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
+                var configuration = configurationRoot.GetSection(nameof(WeeklyReportsConfiguration)).Get<WeeklyReportsConfiguration>() ?? new WeeklyReportsConfiguration();
                 return new WeeklyReports(opts, configuration).Run();
             }
             catch (ValidationException e)
@@ -47,13 +49,6 @@ namespace Utils
                 Console.WriteLine(e.Message);
                 return -1;
             }
-        }
-
-        static T GetConfiguration<T>(string configFile) where T : new()
-        {
-            var configurationRoot = new ConfigurationBuilder().AddJsonFile(configFile).Build();
-            var configuration = configurationRoot.GetSection(nameof(T)).Get<T>();
-            return configuration ?? new T();
         }
     }
 }
