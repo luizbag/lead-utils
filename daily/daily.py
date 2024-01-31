@@ -18,7 +18,7 @@ def setup_config(config_file_name) -> configparser.ConfigParser:
     parser.read(config_file_name)
     return parser
 
-def write_notes(config, team, missing, notes):
+def write_notes(config, team, missing, notes) -> None:
     with open(config['file_path'], config['write_mode'], encoding="utf-8") as f:
         f.write(str.format('\nDaily for team {} on {}\n', team.capitalize(), date.today().isoformat()))
         for k, v in notes.items():
