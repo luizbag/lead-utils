@@ -4,12 +4,12 @@ namespace Utils.Daily
 {
     public class RandomDailyConfiguration
     {
-        public IList<Team> Teams { get; set; }
+        public IList<RandomDailyTeam> Teams { get; set; }
 
-        public Notes Notes { get; set; }
+        public RandomDailyNotes Notes { get; set; }
     }
 
-    public class Team
+    public class RandomDailyTeam
     {
         public string Name { get; set; }
 
@@ -25,7 +25,7 @@ namespace Utils.Daily
         }
     }
 
-    public class Notes
+    public class RandomDailyNotes
     {
         public string FilePath { get; set; }
 

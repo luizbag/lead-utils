@@ -1,5 +1,6 @@
 using CommandLine;
-using utils;
+using FluentValidation;
+using utils.Daily;
 
 namespace Utils.Daily
 {
@@ -24,6 +25,7 @@ namespace Utils.Daily
 
         public override int Run()
         {
+            ValidateConfigurations(Configuration);
             TeamName = TeamName ?? GetTeam();
             var random = new Random();
             var team = Configuration.Teams.First(t => t.Name.Equals(TeamName));
@@ -57,12 +59,14 @@ namespace Utils.Daily
             return 0;
         }
 
+        private void ValidateConfigurations(RandomDailyConfiguration configuration)
+        {
+            var validator = new RandomDailyConfigurationValidator();
+            validator.ValidateAndThrow(configuration);
+        }
+
         private string GetTeam()
         {
-            if(Configuration.Teams == null || Configuration.Teams.Count == 0)
-            {
-                throw new NoConfigurationException();
-            }
             string teamName = "";
             while (string.IsNullOrEmpty(teamName) || !ValidateTeam(teamName))
             {
@@ -72,7 +76,7 @@ namespace Utils.Daily
             return teamName;
         }
 
-        private void WriteNotes(Notes notes, Team team, IList<string> missing, IDictionary<string, string> feedbacks)
+        private void WriteNotes(RandomDailyNotes notes, RandomDailyTeam team, IList<string> missing, IDictionary<string, string> feedbacks)
         {
             using (var writer = File.AppendText(notes.FilePath))
             {

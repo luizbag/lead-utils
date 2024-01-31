@@ -7,7 +7,7 @@
             {"Name": "Test", "Members": ["Eu", "Você", "Ele"]}
         ],
         "Notes": {
-            "FilePath": "c:\\Users\\LuizGavioli\\daily_notes.txt",
+            "FilePath1": "c:\\Users\\LuizGavioli\\daily_notes.txt",
             "WriteMode": "a"
         }
     },

@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using utils.Weekly;
 using Utils.Daily;
@@ -20,15 +21,33 @@ namespace Utils
 
         static int RunDaily(DailyCliOptions opts)
         {
-            var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
-            var configuration = configurationRoot.GetSection(nameof(RandomDailyConfiguration)).Get<RandomDailyConfiguration>();
-            return new RandomDaily(opts, configuration).Run();
+            try
+            {
+                var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
+                var configuration = configurationRoot.GetSection(nameof(RandomDailyConfiguration)).Get<RandomDailyConfiguration>();
+                return new RandomDaily(opts, configuration).Run();
+            }
+            catch (ValidationException e)
+            {
+                Console.WriteLine("Config file not valid!");
+                Console.WriteLine(e.Message);
+                return -1;
+            }
         }
 
         static int RunWeeklyChecks(WeeklyReportsCliOptions opts)
         {
-            var configuration = GetConfiguration<WeeklyReportsConfiguration>(opts.ConfigFile);
-            return new WeeklyReports(opts, configuration).Run();
+            try
+            {
+                var configuration = GetConfiguration<WeeklyReportsConfiguration>(opts.ConfigFile);
+                return new WeeklyReports(opts, configuration).Run();
+            }
+            catch (ValidationException e)
+            {
+                Console.WriteLine("Config file not valid!");
+                Console.WriteLine(e.Message);
+                return -1;
+            }
         }
 
         static T GetConfiguration<T>(string configFile)
