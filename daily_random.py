@@ -1,7 +1,6 @@
 import argparse
 import random
 from datetime import date
-import yaml
 import configparser
 
 CONFIG_FILE = "config.ini"
