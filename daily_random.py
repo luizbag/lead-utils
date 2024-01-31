@@ -25,8 +25,8 @@ if __name__ == "__main__":
         config_file_name = args.config_file or CONFIG_FILE
         config = setup_config(config_file_name)
         config_section = config["config"]
-        teams = config_section["teams"]
-        team = input(str.format("Choose a team ({}):", teams))
+        teams = config_section["teams"].split()
+        team = input(str.format("Choose a team ({}): ", ", ".join(teams)))
         daily = config_section[team].split()
         random.shuffle(daily)
         missing = []
@@ -48,7 +48,7 @@ if __name__ == "__main__":
             for k, v in notes.items():
                 f.write(str.format('- {}: {}\n', k, v))
             if missing:
-                f.write("Missing: {}", missing)
+                f.write(str.format("Missing: {}", ", ".join(missing)))
     except KeyboardInterrupt:
         pass
     finally:
