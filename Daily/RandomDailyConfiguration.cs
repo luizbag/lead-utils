@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Utils.Daily
 {
-    public class RandomDailyOptions
+    public class RandomDailyConfiguration
     {
         public IList<Team> Teams { get; set; }
 

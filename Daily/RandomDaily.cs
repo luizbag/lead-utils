@@ -1,4 +1,5 @@
 using CommandLine;
+using utils;
 
 namespace Utils.Daily
 {
@@ -9,19 +10,19 @@ namespace Utils.Daily
         public string? TeamName { get; set; }
     }
 
-    public class RandomDaily : IRunnable
+    public class RandomDaily : BaseRunner
     {
         private string? TeamName { get; set; } = null;
 
-        private RandomDailyOptions Configuration { get; set; }
+        private RandomDailyConfiguration Configuration { get; set; }
 
-        public RandomDaily(DailyCliOptions options, RandomDailyOptions configuration)
+        public RandomDaily(DailyCliOptions options, RandomDailyConfiguration configuration)
         {
             TeamName = options.TeamName;
             Configuration = configuration;
         }
 
-        public int Run()
+        public override int Run()
         {
             TeamName = TeamName ?? GetTeam();
             var random = new Random();
@@ -58,6 +59,10 @@ namespace Utils.Daily
 
         private string GetTeam()
         {
+            if(Configuration.Teams == null || Configuration.Teams.Count == 0)
+            {
+                throw new NoConfigurationException();
+            }
             string teamName = "";
             while (string.IsNullOrEmpty(teamName) || !ValidateTeam(teamName))
             {

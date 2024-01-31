@@ -1,5 +1,5 @@
 {
-    "RandomDailyOptions":{
+    "RandomDailyConfiguration":{
         "Teams": [
             {"Name": "Frodo", "Members": [  "Lorena", "Alejandro", "Josué", "Swapnil", "SaiCharan", "Paulo"]},
             {"Name": "Aragorn", "Members": ["Marcel", "Tiago", "Ricardo", "Andréia", "Richa", "Neetika"]},

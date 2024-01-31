@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using Microsoft.Extensions.Configuration;
+using utils.Weekly;
 using Utils.Daily;
 using Utils.Weekly;
 
@@ -9,10 +10,10 @@ namespace Utils
     {
         static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<DailyCliOptions, WeeklyReportsOptions>(args)
+            Parser.Default.ParseArguments<DailyCliOptions, WeeklyReportsCliOptions>(args)
                 .MapResult(
                     (DailyCliOptions opts) => RunDaily(opts),
-                    (WeeklyReportsOptions opts) => RunWeeklyChecks(opts),
+                    (WeeklyReportsCliOptions opts) => RunWeeklyChecks(opts),
                     errs => 1
                 );
         }
@@ -20,13 +21,21 @@ namespace Utils
         static int RunDaily(DailyCliOptions opts)
         {
             var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
-            var dailyConfiguration = configurationRoot.GetSection(nameof(RandomDailyOptions)).Get<RandomDailyOptions>();
-            return new RandomDaily(opts, dailyConfiguration).Run();
+            var configuration = configurationRoot.GetSection(nameof(RandomDailyConfiguration)).Get<RandomDailyConfiguration>();
+            return new RandomDaily(opts, configuration).Run();
         }
 
-        static int RunWeeklyChecks(WeeklyReportsOptions opts)
+        static int RunWeeklyChecks(WeeklyReportsCliOptions opts)
         {
-            return new WeeklyReports(opts).Run();
+            var configuration = GetConfiguration<WeeklyReportsConfiguration>(opts.ConfigFile);
+            return new WeeklyReports(opts, configuration).Run();
+        }
+
+        static T GetConfiguration<T>(string configFile)
+        {
+            var configurationRoot = new ConfigurationBuilder().AddJsonFile(configFile).Build();
+            var configuration = configurationRoot.GetSection(nameof(T)).Get<T>();
+            return configuration;
         }
     }
 }
