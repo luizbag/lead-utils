@@ -1,5 +1,6 @@
 using CommandLine;
 using FluentValidation;
+using Sharprompt;
 using utils.Daily;
 using Utils.Providers;
 
@@ -58,12 +59,10 @@ namespace Utils.Daily
             foreach (var member in members)
             {
                 Console.WriteLine(member);
-                Console.Write("Present (Y/n): ");
-                var present = Console.ReadLine();
-                if (present != null && !present.ToLowerInvariant().Equals("n"))
+                var present = Prompt.Confirm("Present:", true);
+                if (present)
                 {
-                    Console.Write("Feedback: ");
-                    var feedback = Console.ReadLine();
+                    var feedback = Prompt.Input<string>("Feedback:");
                     feedbacks[member] = feedback ?? "";
                     continue;
                 }
@@ -86,8 +85,7 @@ namespace Utils.Daily
             string? teamName = "";
             while (string.IsNullOrEmpty(teamName) || !ValidateTeam(teamName))
             {
-                Console.WriteLine("Choose a team ({0}):", string.Join(", ", Configuration.Teams.Select(t => t.Name)));
-                teamName = Console.ReadLine();
+                teamName = Prompt.Select<string>("Choose a team", Configuration.Teams.Select(t => t.Name));
             }
             return teamName;
         }
