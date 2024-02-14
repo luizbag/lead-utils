@@ -59,9 +59,11 @@ namespace Utils.Daily
             IList<string> missing = new List<string>();
             IDictionary<string, string> feedbacks = new Dictionary<string, string>();
             random.Shuffle<string>(members);
-            foreach (var member in members)
+            foreach (var it in members.Select((m, i) => new { Member = m, Index = i + 1 }))
             {
-                Console.WriteLine(member);
+                var member = it.Member;
+                var index = it.Index;
+                Console.WriteLine("{0}/{1} - {2}", index, members.Count(), member);
                 var present = Prompt.Confirm("Present:", true);
                 if (present)
                 {
@@ -95,7 +97,7 @@ namespace Utils.Daily
 
         public void WriteNotes(RandomDailyNotes notes, RandomDailyTeam team, IList<string> missing, IDictionary<string, string> feedbacks)
         {
-            if(!_pathProvider.Exists(notes.FilePath))
+            if (!_pathProvider.Exists(notes.FilePath))
             {
                 _directoryProvider.CreateDirectory(notes.FilePath);
             }
@@ -116,10 +118,12 @@ namespace Utils.Daily
             }
         }
 
-        public string GetFileName(FeedbackArchive feedbackArchive) {
+        public string GetFileName(FeedbackArchive feedbackArchive)
+        {
             var now = _dateTimeProvider.Now;
             var dateString = now.ToString(DateFormat);
-            if(feedbackArchive == FeedbackArchive.Weekly) {
+            if (feedbackArchive == FeedbackArchive.Weekly)
+            {
                 dateString = now.AddDays(DayOfWeek.Monday - now.DayOfWeek).ToString(DateFormat);
             }
             return string.Format("{0}_notes_{1}.txt", feedbackArchive, dateString);
