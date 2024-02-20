@@ -18,7 +18,6 @@ namespace utils.Daily
         public RandomDailyNotesValidator()
         {
             RuleFor(notes => notes.FilePath).NotEmpty();
-            RuleFor(notes => notes.WriteMode).NotEmpty();
         }
     }
 

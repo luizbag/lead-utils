@@ -1,6 +1,9 @@
+using System.Text;
 using CommandLine;
 using FluentValidation;
+using Sharprompt;
 using utils.Daily;
+using Utils.Providers;
 
 namespace Utils.Daily
 {
@@ -19,15 +22,35 @@ namespace Utils.Daily
 
         private readonly RandomDailyConfigurationValidator validator;
 
-        public RandomDaily(DailyCliOptions options, RandomDailyConfiguration configuration)
+        private const string DateFormat = "yyyy_MM_dd";
+
+        private IDateTimeProvider _dateTimeProvider;
+
+        private IPathProvider _pathProvider;
+
+        private IFileProvider _fileProvider;
+
+        private IDirectoryProvider _directoryProvider;
+
+        public RandomDaily(DailyCliOptions options, RandomDailyConfiguration configuration,
+            IDateTimeProvider dateTimeProvider,
+            IPathProvider pathProvider,
+            IFileProvider fileProvider,
+            IDirectoryProvider directoryProvider)
         {
             TeamName = options.TeamName;
             Configuration = configuration;
             validator = new RandomDailyConfigurationValidator();
+            _dateTimeProvider = dateTimeProvider;
+            _pathProvider = pathProvider;
+            _fileProvider = fileProvider;
+            _directoryProvider = directoryProvider;
         }
 
         public override int Run()
         {
+            Console.OutputEncoding = Encoding.UTF8;
+            Prompt.ThrowExceptionOnCancel = true;
             validator.ValidateAndThrow(Configuration);
             TeamName = TeamName ?? GetTeam();
             var random = new Random();
@@ -36,15 +59,15 @@ namespace Utils.Daily
             IList<string> missing = new List<string>();
             IDictionary<string, string> feedbacks = new Dictionary<string, string>();
             random.Shuffle<string>(members);
-            foreach (var member in members)
+            foreach (var it in members.Select((m, i) => new { Member = m, Index = i + 1 }))
             {
-                Console.WriteLine(member);
-                Console.Write("Present (Y/n): ");
-                var present = Console.ReadLine();
-                if (present != null && !present.ToLowerInvariant().Equals("n"))
+                var member = it.Member;
+                var index = it.Index;
+                Console.WriteLine("{0}/{1} - {2}", index, members.Count(), member);
+                var present = Prompt.Confirm("Present:", true);
+                if (present)
                 {
-                    Console.Write("Feedback: ");
-                    var feedback = Console.ReadLine();
+                    var feedback = Prompt.Input<string>("Feedback:");
                     feedbacks[member] = feedback ?? "";
                     continue;
                 }
@@ -62,23 +85,28 @@ namespace Utils.Daily
             return 0;
         }
 
-        private string GetTeam()
+        public string GetTeam()
         {
             string? teamName = "";
             while (string.IsNullOrEmpty(teamName) || !ValidateTeam(teamName))
             {
-                Console.WriteLine("Choose a team ({0}):", string.Join(", ", Configuration.Teams.Select(t => t.Name)));
-                teamName = Console.ReadLine();
+                teamName = Prompt.Select<string>("Choose a team", Configuration.Teams.Select(t => t.Name));
             }
             return teamName;
         }
 
-        private void WriteNotes(RandomDailyNotes notes, RandomDailyTeam team, IList<string> missing, IDictionary<string, string> feedbacks)
+        public void WriteNotes(RandomDailyNotes notes, RandomDailyTeam team, IList<string> missing, IDictionary<string, string> feedbacks)
         {
-            using (var writer = File.AppendText(notes.FilePath))
+            if (!_pathProvider.Exists(notes.FilePath))
+            {
+                _directoryProvider.CreateDirectory(notes.FilePath);
+            }
+            string fileName = GetFileName(notes.Archive);
+            var fullPath = _pathProvider.Combine(notes.FilePath, fileName);
+            using (var writer = _fileProvider.AppendText(fullPath))
             {
                 writer.WriteLine();
-                writer.WriteLine("Daily for team {0} on {1}", team.Name, DateTime.Today.ToShortDateString());
+                writer.WriteLine("Daily for team {0} on {1}", team.Name, _dateTimeProvider.Today.ToShortDateString());
                 foreach ((var member, var feedback) in feedbacks)
                 {
                     writer.WriteLine("\t- {0}: {1}", member, feedback);
@@ -88,6 +116,17 @@ namespace Utils.Daily
                     writer.WriteLine("Missing: {0}", string.Join(", ", missing));
                 }
             }
+        }
+
+        public string GetFileName(FeedbackArchive feedbackArchive)
+        {
+            var now = _dateTimeProvider.Now;
+            var dateString = now.ToString(DateFormat);
+            if (feedbackArchive == FeedbackArchive.Weekly)
+            {
+                dateString = now.AddDays(DayOfWeek.Monday - now.DayOfWeek).ToString(DateFormat);
+            }
+            return string.Format("{0}_notes_{1}.txt", feedbackArchive, dateString);
         }
 
         public bool ValidateTeam(string teamName)
