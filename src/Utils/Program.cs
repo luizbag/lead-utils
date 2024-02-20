@@ -53,7 +53,7 @@ namespace Utils
                 Console.WriteLine(e.Message);
                 return -1;
             }
-            catch(PromptCanceledException e)
+            catch(PromptCanceledException)
             {
                 Console.WriteLine("Canceled");
                 return 0;
