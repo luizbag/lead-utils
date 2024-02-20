@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
+using Sharprompt;
 using utils.Weekly;
 using Utils.Daily;
 using Utils.Providers;
@@ -51,6 +52,11 @@ namespace Utils
                 Console.WriteLine("Config file not valid!");
                 Console.WriteLine(e.Message);
                 return -1;
+            }
+            catch(PromptCanceledException e)
+            {
+                Console.WriteLine("Canceled");
+                return 0;
             }
         }
 

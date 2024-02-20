@@ -1,3 +1,4 @@
+using System.Text;
 using CommandLine;
 using FluentValidation;
 using Sharprompt;
@@ -48,6 +49,8 @@ namespace Utils.Daily
 
         public override int Run()
         {
+            Console.OutputEncoding = Encoding.UTF8;
+            Prompt.ThrowExceptionOnCancel = true;
             validator.ValidateAndThrow(Configuration);
             TeamName = TeamName ?? GetTeam();
             var random = new Random();
