@@ -4,19 +4,15 @@ namespace Utils.Configuration
 {
     [Verb("list", HelpText = "List Configurations")]
     public class ListConfigOptions
-    {
-
-    }
+    { }
 
     public class ListConfig : BaseRunner
     {
         private readonly ConfigOptions _configOptions;
-        private readonly ListConfigOptions _listConfigOptions;
 
-        public ListConfig(ConfigOptions configOptions, ListConfigOptions listConfigOptions)
+        public ListConfig(ConfigOptions configOptions)
         {
             _configOptions = configOptions;
-            _listConfigOptions = listConfigOptions;
         }
 
         public override int Run()
@@ -30,7 +26,7 @@ namespace Utils.Configuration
                 }
                 return 0;
             }
-            catch(FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("File not found. Use utils config init to create one.");
                 return 1;

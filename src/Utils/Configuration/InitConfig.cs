@@ -19,13 +19,11 @@ namespace Utils.Configuration
     public class InitConfig : BaseRunner
     {
         private readonly ConfigOptions _configOptions;
-        private readonly InitConfigOptions _initConfigOPtions;
         private readonly JsonSerializerOptions _options;
 
-        public InitConfig(ConfigOptions configOptions, InitConfigOptions initConfigOptions)
+        public InitConfig(ConfigOptions configOptions)
         {
             _configOptions = configOptions;
-            _initConfigOPtions = initConfigOptions;
             _options = new JsonSerializerOptions
             {
                 WriteIndented = true,
@@ -55,12 +53,12 @@ namespace Utils.Configuration
         private RandomDailyConfiguration CreateRandomDailyConfiguration()
         {
             RandomDailyConfiguration configuration = new RandomDailyConfiguration();
-            if(configuration.Teams.Count == 0)
+            if (configuration.Teams.Count == 0)
             {
                 configuration.Teams.Add(CreateTeam());
             }
             var addAnother = Prompt.Confirm("Add another team?");
-            while(addAnother)
+            while (addAnother)
             {
                 configuration.Teams.Add(CreateTeam());
                 addAnother = Prompt.Confirm("Add another team?");
@@ -76,7 +74,7 @@ namespace Utils.Configuration
             var team = new RandomDailyTeam();
             team.Name = Prompt.Input<string>("Team Name:");
             var nMembers = Prompt.Input<int>("How many members:");
-            for(var i=0;i<nMembers;i++)
+            for (var i = 0; i < nMembers; i++)
             {
                 var memberName = Prompt.Input<string>("Member Name:");
                 team.Members.Add(memberName);

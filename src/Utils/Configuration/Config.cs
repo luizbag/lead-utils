@@ -14,8 +14,8 @@ namespace Utils.Configuration
         {
             return Parser.Default.ParseArguments<ListConfigOptions, InitConfigOptions>(args.Skip(1).ToArray())
                 .MapResult(
-                    (ListConfigOptions opts) => new ListConfig(configOptions, opts).Run(),
-                    (InitConfigOptions opts) => new InitConfig(configOptions, opts).Run(),
+                    (ListConfigOptions opts) => new ListConfig(configOptions).Run(),
+                    (InitConfigOptions opts) => new InitConfig(configOptions).Run(),
                     errs => 1
                 );
         }

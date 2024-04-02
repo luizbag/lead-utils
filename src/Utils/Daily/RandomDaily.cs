@@ -24,13 +24,13 @@ namespace Utils.Daily
 
         private const string DateFormat = "yyyy_MM_dd";
 
-        private IDateTimeProvider _dateTimeProvider;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        private IPathProvider _pathProvider;
+        private readonly IPathProvider _pathProvider;
 
-        private IFileProvider _fileProvider;
+        private readonly IFileProvider _fileProvider;
 
-        private IDirectoryProvider _directoryProvider;
+        private readonly IDirectoryProvider _directoryProvider;
 
         public RandomDaily(DailyCliOptions options, RandomDailyConfiguration configuration,
             IDateTimeProvider dateTimeProvider,
