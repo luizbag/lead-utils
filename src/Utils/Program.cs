@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Sharprompt;
 using utils.Weekly;
+using Utils.Configuration;
 using Utils.Daily;
 using Utils.Providers;
 using Utils.Weekly;
@@ -17,7 +18,7 @@ namespace Utils
             var fileProvider = new FileProvider();
             var pathProvider = new PathProvider();
             var directoryProvider = new DirectoryProvider();
-            Parser.Default.ParseArguments<DailyCliOptions, WeeklyReportsCliOptions>(args)
+            Parser.Default.ParseArguments<DailyCliOptions, WeeklyReportsCliOptions, ConfigOptions>(args)
                 .MapResult(
                     (DailyCliOptions opts) => RunRandomDaily(opts,
                         dateTimeProvider,
@@ -25,6 +26,7 @@ namespace Utils
                         fileProvider,
                         directoryProvider),
                     (WeeklyReportsCliOptions opts) => RunWeeklyChecks(opts),
+                    (ConfigOptions configOptions) => new Config().Run(configOptions, args),
                     errs => 1
                 );
         }
@@ -37,6 +39,8 @@ namespace Utils
         {
             try
             {
+                if (string.IsNullOrEmpty(opts.ConfigFile))
+                    opts.ConfigFile = ConfigurationDefaults.ConfigFile;
                 var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
                 var configuration = configurationRoot.GetSection(nameof(RandomDailyConfiguration)).Get<RandomDailyConfiguration>() ?? new RandomDailyConfiguration();
                 return new RandomDaily(opts,
@@ -53,7 +57,7 @@ namespace Utils
                 Console.WriteLine(e.Message);
                 return -1;
             }
-            catch(PromptCanceledException)
+            catch (PromptCanceledException)
             {
                 Console.WriteLine("Canceled");
                 return 0;
@@ -64,6 +68,8 @@ namespace Utils
         {
             try
             {
+                if (string.IsNullOrEmpty(opts.ConfigFile))
+                    opts.ConfigFile = ConfigurationDefaults.ConfigFile;
                 var configurationRoot = new ConfigurationBuilder().AddJsonFile(opts.ConfigFile).Build();
                 var configuration = configurationRoot.GetSection(nameof(WeeklyReportsConfiguration)).Get<WeeklyReportsConfiguration>() ?? new WeeklyReportsConfiguration();
                 return new WeeklyReports(opts, configuration).Run();

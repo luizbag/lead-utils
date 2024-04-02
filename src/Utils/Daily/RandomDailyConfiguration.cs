@@ -1,5 +1,6 @@
 using System.Text;
 using utils.Daily;
+using Utils.Configuration;
 
 namespace Utils.Daily
 {
@@ -41,8 +42,8 @@ namespace Utils.Daily
 
     public class RandomDailyNotes
     {
-        public string FilePath { get; set; } = string.Empty;
+        public string FilePath { get; set; } = ConfigurationDefaults.FeedbackFilePath;
 
-        public FeedbackArchive Archive { get; set; } = FeedbackArchive.Daily;
+        public FeedbackArchive Archive { get; set; } = ConfigurationDefaults.FeedbackArchive;
     }
 }
